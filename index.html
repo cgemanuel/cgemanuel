@@ -3,21 +3,28 @@
 <head>
  <style>
  body {
- background-color: #f0f0f0;
+ background-color: #e6b8e6;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ height: 100vh;
+ margin: 0;
+ }
+
+ #container {
+ text-align: center;
  }
 
  #question {
  font-size: 36px;
- text-align: center;
- margin-top: 50px;
+ margin-bottom: 20px;
  }
 
  #buttons {
- text-align: center;
- margin-top: 50px;
+ margin-top: 20px;
  }
 
- #yesButton {
+ #yesButton, #noButton {
  background-color: #008CBA;
  border: none;
  color: white;
@@ -28,19 +35,41 @@
  font-size: 16px;
  margin: 4px 2px;
  cursor: pointer;
+ transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+ position: relative;
+ overflow: hidden;
  }
 
- #noButton {
- background-color: #008CBA;
- border: none;
- color: white;
- padding: 15px 32px;
- text-align: center;
- text-decoration: none;
- display: inline-block;
- font-size: 16px;
- margin: 4px 2px;
- cursor: pointer;
+ #yesButton:active, #noButton:active {
+ transform: translateY(2px);
+ box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+ }
+
+ #yesButton::before, #noButton::before {
+ content: "";
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: none;
+ z-index: -1;
+ }
+
+ #yesButton:active::before, #noButton:active::before {
+ animation: starBurst 0.3s ease-in-out;
+ }
+
+ @keyframes starBurst {
+ 0% {
+ background: none;
+ }
+ 50% {
+ background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%);
+ }
+ 100% {
+ background: none;
+ }
  }
 
  #popup {
@@ -74,29 +103,50 @@
  color: black;
  text-decoration: none;
  cursor: pointer;
-}
+ }
 
  #questionImage {
- display: block;
- margin: 0 auto;
  width: 20%;
  }
-</style>
+
+ .star {
+ position: absolute;
+ width: 10px;
+ height: 10px;
+ background-color: #fff;
+ border-radius: 50%;
+ opacity: 0;
+ animation: starFade 0.8s ease-in-out;
+ }
+
+ @keyframes starFade {
+ 0% {
+ opacity: 1;
+ transform: translateY(0);
+ }
+ 100% {
+ opacity: 0;
+ transform: translateY(-50px);
+ }
+ }
+ </style>
 </head>
 <body>
+ <div id="container">
  <div id="question">
  <h1>¿Me dejarás de hacer bullying?</h1>
  <img id="questionImage" src="gato1.jpg" alt="">
  </div>
  <div id="buttons">
- <button id="yesButton" onclick="showPopup()">Si</button>
- <button id="noButton" onclick="growButton()">No</button>
+ <button id="yesButton" onclick="showPopup(); animateButton(this)">Si</button>
+ <button id="noButton" onclick="growButton(); animateButton(this)">No</button>
+ </div>
  </div>
  <div id="popup">
  <div id="popupContent">
  <span id="popupClose" onclick="hidePopup()">&times;</span>
  <img src="raton1.jpg" alt="Tenkius monkeyroomie, toma, para que dejes de decirme perro desgraciado y dejes de tirar hate jajaja" style="width: 95%;">
- <h2>tenkius monkeyroomie, toma, para que dejes de decirme perro desgraciado y dejes de tirar hate jajaja</h2>
+ <h2 id="popupMessage">tenkius monkeyroomie, toma, para que dejes de decirme perro desgraciado y dejes de tirar hate jajaja</h2>
  </div>
  </div>
  <script>
@@ -106,7 +156,6 @@
  const popup = document.getElementById('popup');
  const popupContent = document.getElementById('popupContent');
  popup.style.display = 'block';
- popupContent.style.fontSize = buttonSize + 'px';
  }
 
  function growButton() {
@@ -119,6 +168,44 @@
  function hidePopup() {
  const popup = document.getElementById('popup');
  popup.style.display = 'none';
+ }
+
+ const popupMessage = document.getElementById('popupMessage');
+ popupMessage.style.fontSize = '25px';
+
+ function animateButton(button) {
+ button.style.transform = 'translateY(2px)';
+ button.style.boxShadow = '0 0 30px rgba(0, 0, 0, 0.5)';
+ setTimeout(() => {
+ button.style.transform = 'translateY(0)';
+ button.style.boxShadow = 'none';
+ }, 200);
+
+ createStars(button);
+ }
+
+ function createStars(button) {
+ const buttonRect = button.getBoundingClientRect();
+ const starsCount = 10; // Ajusta la cantidad de estrellas según tus preferencias
+
+ for (let i = 0; i < starsCount; i++) {
+ const star = document.createElement('div');
+ star.classList.add('star');
+
+ const x = Math.random() * buttonRect.width;
+ const y = Math.random() * buttonRect.height;
+ const left = buttonRect.left + x;
+ const top = buttonRect.top + y;
+
+ star.style.left = `${left}px`;
+ star.style.top = `${top}px`;
+
+ document.body.appendChild(star);
+
+ setTimeout(() => {
+ star.remove();
+ }, 800); // Duración de la animación de desvanecimiento de las estrellas
+ }
  }
  </script>
 </body>
